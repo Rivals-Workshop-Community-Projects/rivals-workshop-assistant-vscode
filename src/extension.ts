@@ -3,108 +3,55 @@
 import * as vscode from 'vscode';
 import * as child_process from 'child_process';
 
+const chokidar = require('chokidar');
+
+const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath
+const command = __dirname+ `\\rivals_workshop_assistant.exe `+ workspacePath;
+const workingDirectory = __dirname;
+
+console.log('working directory: ' + workingDirectory);
+console.log('workspace directory: ' + command);
+console.log('command: ' + command);
+
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    console.log('rivals-lib active');
+    console.log('Assistant active');
 
-	vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-		inject();
-	});
+    vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+        run();
+    });
 
-
-    let disposable = vscode.commands.registerCommand('rivals-lib.lib-inject', () => {
-		inject();
+    let disposable = vscode.commands.registerCommand('rivals-workshop-assistant.run', () => {
+        run();
     });
 
     context.subscriptions.push(disposable);
+
+    // TODO consider using chokidar https://github.com/paulmillr/chokidar
+    chokidar.watch(`${workspacePath}/anims/`).on('change', (event: string, path: string) => {
+        console.log(`${path} changed. Reexporting.`)
+        run()
+    })
 }
 
+function run() {
 
-
-function inject(){
-	// vscode.window.showInformationMessage('Before inject');
-	// var command = `${vscode.workspace.rootPath}\\rivals_code_inject.exe`;
-	var command = __dirname
-		+ `\\rivals_workshop_assistant.exe `
-		+ vscode.workspace.workspaceFolders![0].uri.fsPath;
-	// var command = `chdir`;
-
-	// cwd: `${vscode.workspace.rootPath}`
-	var workingDirectory = __dirname;
-	console.log('working directory: ' + workingDirectory);
-	console.log(command);
-	
-
-	// child_process.execFile(command, {shell:true, cwd:workingDirectory}, (err, stdout, stderr) => {
-	child_process.execFile(command, [workingDirectory], {shell:true}, (err, stdout, stderr) => {
-		if (err) {
-			console.log(err);
-			vscode.window.showInformationMessage('Rivals-lib error. Check dev console or log in extension folder.');
-			return;
-		}
-		console.log(`stdout: ${stdout}`);
-		console.log(`stderr: ${stderr}`);
-		// vscode.window.showInformationMessage('Inject successful.');
-	});
+    child_process.execFile(command, [workingDirectory], { shell: true }, (err, stdout, stderr) => {
+        if (err) {
+            console.log(err);
+            vscode.window.showInformationMessage('Assistant error. Check dev console or log in extension folder.');
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+    });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export function activate(context: vscode.ExtensionContext): void {
-
-// 	var extension = new RunOnSaveExtension(context);
-
-// 	vscode.workspace.onDidChangeConfiguration(() => {
-// 		let disposeStatus = extension.showStatusMessage('Run On Save: Reloading config.');
-// 		extension.loadConfig();
-// 		disposeStatus.dispose();
-// 	});
-
-// 	vscode.commands.registerCommand('extension.emeraldwalk.enableRunOnSave', () => {
-// 		extension.isEnabled = true;
-// 	});
-
-// 	vscode.commands.registerCommand('extension.emeraldwalk.disableRunOnSave', () => {
-// 		extension.isEnabled = false;
-// 	});
-
-// 	vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-// 		extension.runCommands(document);
-// 	});
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // this method is called when your extension is deactivated
+// noinspection JSUnusedGlobalSymbols
 export function deactivate() {
-    console.log('rivals-lib inactive');
+    console.log('assistant inactive');
 }
