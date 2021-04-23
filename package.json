@@ -4,7 +4,7 @@
 	"displayName": "Rivals Workshop Assistant",
 	"description": "Automatic processing tool for Rivals of Aether modding",
 	"repository": "https://github.com/Rivals-Workshop-Community-Projects/rivals-workshop-assistant",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"engines": {
 		"vscode": "^1.48.0"
 	},
