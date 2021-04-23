@@ -4,51 +4,38 @@ import * as vscode from 'vscode';
 import * as child_process from 'child_process';
 
 const chokidar = require('chokidar');
+const pluginDir = __dirname
+const projectDir = vscode.workspace.workspaceFolders![0].uri.fsPath
+const command = pluginDir + `\\rivals_workshop_assistant.exe `+ projectDir;
 
-const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath
-const command = __dirname+ `\\rivals_workshop_assistant.exe `+ workspacePath;
-const workingDirectory = __dirname;
-
-console.log('working directory: ' + workingDirectory);
+console.log('pluginDir: ' + pluginDir);
 console.log('workspace directory: ' + command);
-console.log('command: ' + command);
-
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-    console.log('Assistant active');
-
-    vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-        run();
-    });
-
-    let disposable = vscode.commands.registerCommand('rivals-workshop-assistant.run', () => {
-        run();
-    });
-
-    context.subscriptions.push(disposable);
-
-    // TODO consider using chokidar https://github.com/paulmillr/chokidar
-    chokidar.watch(`${workspacePath}/anims/`).on('change', (event: string, path: string) => {
-        console.log(`${path} changed. Reexporting.`)
-        run()
-    })
-}
+console.log('assistant command: ' + command);
 
 function run() {
-
-    child_process.execFile(command, [workingDirectory], { shell: true }, (err, stdout, stderr) => {
+    child_process.execFile(command, [pluginDir], { shell: true }, (err, stdout, stderr) => {
         if (err) {
             console.log(err);
             vscode.window.showInformationMessage('Assistant error. Check dev console or log in extension folder.');
-            return;
         }
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
     });
 }
 
+// called when extension is activated
+export function activate(context: vscode.ExtensionContext) {
+    console.log('Assistant activated');
+
+    vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+        run();
+    });
+
+    chokidar.watch(`${projectDir}/anims/`).on('change', (event: string, path: string) => {
+        console.log(`${path} changed. Reexporting.`)
+        run()
+    })
+}
 
 // this method is called when your extension is deactivated
 // noinspection JSUnusedGlobalSymbols
