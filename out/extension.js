@@ -8,7 +8,7 @@ const child_process = require("child_process");
 const chokidar = require('chokidar');
 const pluginDir = __dirname;
 const projectDir = vscode.workspace.workspaceFolders[0].uri.fsPath;
-const command = pluginDir + `\\rivals_workshop_assistant.exe ` + projectDir;
+const command = `"${pluginDir}\\rivals_workshop_assistant.exe" ` + `"${projectDir}"`;
 console.log('pluginDir: ' + pluginDir);
 console.log('workspace directory: ' + command);
 console.log('assistant command: ' + command);
