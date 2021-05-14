@@ -23,7 +23,7 @@ jobs:
         workflow_conclusion: success
         name: rivals_workshop_assistant.exe
         path: out
-        repo: https://github.com/Rivals-Workshop-Community-Projects/rivals-workshop-assistant/
+        repo: Rivals-Workshop-Community-Projects/rivals-workshop-assistant
         
          
     - run: npm install
