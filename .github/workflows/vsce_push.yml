@@ -25,17 +25,11 @@ jobs:
         path: out
         repo: https://github.com/Rivals-Workshop-Community-Projects/rivals-workshop-assistant/
         
-        
-    - id: exe_version
-      uses: pozetroninc/github-action-get-latest-release@master
-      with:
-        repository: https://github.com/Rivals-Workshop-Community-Projects/rivals-workshop-assistant
-        excludes: prerelease, draft
-          
+         
     - run: npm install
     - uses: lannonbr/vsce-action@master
       with:
         args: "publish -p $VSCE_TOKEN $EXE_VERSION" 
       env:
         VSCE_TOKEN: ${{ secrets.VSCE_PAT }}
-        EXE_VERSION: ${{ steps.exe_version.outputs.release }}
+        EXE_VERSION: ${{ github.event.client_payload.tag }}
