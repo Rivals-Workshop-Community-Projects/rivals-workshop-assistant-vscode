@@ -19,7 +19,7 @@ jobs:
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         # Required, workflow file name or ID
-        workflow: python-app.yml
+        workflow: package.yml
         workflow_conclusion: success
         name: rivals_workshop_assistant.exe
         path: out
