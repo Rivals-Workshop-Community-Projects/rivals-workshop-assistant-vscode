@@ -6,13 +6,17 @@ import * as child_process from 'child_process';
 const chokidar = require('chokidar');
 const pluginDir = __dirname
 const projectDir = vscode.workspace.workspaceFolders![0].uri.fsPath
-const command = `"${pluginDir}\\rivals_workshop_assistant.exe" `+ `"${projectDir}"`;
+
+// const ALL_MODE = "all";
+const ANIMS_MODE = "anims";
+const SCRIPTS_MODE = "scripts";
 
 console.log('pluginDir: ' + pluginDir);
-console.log('workspace directory: ' + command);
-console.log('assistant command: ' + command);
+console.log('projectDir: ', + projectDir);
 
-function run() {
+function runAssistant(mode: string) {
+    const command = `"${pluginDir}\\rivals_workshop_assistant.exe" ` + `"${projectDir}" ` + mode;
+    console.log("Running Assistant Command: ", command)
     child_process.execFile(command, [pluginDir], { shell: true }, (err, stdout, stderr) => {
         if (err) {
             console.log(err);
@@ -28,12 +32,13 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('Assistant activated');
 
     vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-        run();
+        console.log(`File saved. Reexporting.`)
+        runAssistant(SCRIPTS_MODE);
     });
 
     chokidar.watch(`${projectDir}/anims/`).on('change', (event: string, path: string) => {
         console.log(`${path} changed. Reexporting.`)
-        run()
+        runAssistant(ANIMS_MODE)
     })
 }
 
