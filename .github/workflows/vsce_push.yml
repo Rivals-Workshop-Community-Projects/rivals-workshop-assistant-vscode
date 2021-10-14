@@ -1,0 +1,35 @@
+name: VSCE Push
+
+on:
+  push:
+    branches: [ main ]
+  repository_dispatch:
+    types: [exe-push]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        # Required, workflow file name or ID
+        workflow: package.yml
+        workflow_conclusion: success
+        name: exe
+        path: out
+        repo: Rivals-Workshop-Community-Projects/rivals-workshop-assistant
+        
+         
+    - run: npm install
+    - uses: lannonbr/vsce-action@master
+      with:
+        args: "publish -p $VSCE_TOKEN $EXE_VERSION" 
+      env:
+        VSCE_TOKEN: ${{ secrets.VSCE_PAT }}
+        EXE_VERSION: ${{ github.event.client_payload.tag }}
